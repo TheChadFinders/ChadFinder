@@ -12,7 +12,9 @@ public class Spline
     private double xOffset;
     private double yOffset;
 
-    private double dx = 0.0001;
+    private final double dx = 0.00001;
+    private double arcLength;
+    private double[] arcLengthIntegral;
 
     public Spline(double x0, double y0, double theta0, double x1, double y1, double theta1){
         System.out.println("Reticulating splines...");
@@ -33,6 +35,9 @@ public class Spline
         c = -(6 * yp0_hat + 4 * yp1_hat) / (distance * distance);
         d = 0;
         e = yp0_hat;
+        
+        arcLength = evaluateArcLength();
+        
 
     }
 
@@ -68,17 +73,19 @@ public class Spline
 
     }
 
-    public double getArcLength(){
+    public double evaluateArcLength(){
         double a = 0;
         double integral = 0;
+        
+        arcLengthIntegral = new double[(int)(distance/dx)];
 
-        while(a<distance){
-            integral += Math.sqrt(1+Math.pow(eval(a,2), 2)) * dx;
-            a+=dx;
+        for(int i=0; i<arcLengthIntegral.length; i++) {
+        	arcLengthIntegral[i] = integral;
+        	integral += Math.sqrt(1+Math.pow(eval(a,2), 2)) * dx;
+        	a += dx;	
         }
 
         return integral;
-
     }
 
 
@@ -87,12 +94,12 @@ public class Spline
         double[] result = new double[2];
 
         percentage = Math.max(Math.min(percentage, 1), 0);
-        double x_hat = percentage * distance;
-        double y_hat = (a* x_hat + b) * x_hat * x_hat * x_hat * x_hat
-                + c * x_hat * x_hat * x_hat + d * x_hat * x_hat + e * x_hat;
-
-        result[0] = x_hat + xOffset;
-        result[1] = y_hat + yOffset;
+        double x = arcLengthIntegral.length * percentage;
+        double y = arcLengthIntegral[(int)(x)];
+        x *= dx;
+        
+        result[0] = x;
+        result[1] = y;
 
         return result;
     }
@@ -100,6 +107,8 @@ public class Spline
     public void printCenter(){
         System.out.println("X -> " + getXandY(0.5)[0] + "\n" + "Y -> " + getXandY(0.5)[1]);
     }
+    
+    
 
 
     //GETTERS
@@ -124,7 +133,11 @@ public class Spline
         return e;
     }
 
-    public double getDistance() {
+    public double getArcLength() {
+		return arcLength;
+	}
+    
+	public double getDistance() {
         return distance;
     }
 
