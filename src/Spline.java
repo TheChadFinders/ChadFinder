@@ -1,5 +1,4 @@
-public class Spline
-{
+public class Spline {
     //ax^5 bx^4 cx^3 dx^2 ex
 
     private double a = 0;
@@ -62,15 +61,16 @@ public class Spline
     /**
      *  eval(x,nDerivative): Returns the nDerivative of the function evaluated at x
      */
-    public double eval(double x, int nDerivative){
-        switch (nDerivative){
-            case 0: return a*Math.pow(x,5) + b*Math.pow(x,4) + c*Math.pow(x,3) + d*Math.pow(x,2) + e*x;
-            case 1: return 5*a*Math.pow(x,4) + 4*b*Math.pow(x,3) + 3*c*Math.pow(x,2) + 2*d*x + e;
-            case 2: return 5*4*a*Math.pow(x,3) + 4*3*b*Math.pow(x,2) + 3*2*c*x + 2*d;
-
-            default: return 0;
-        }
-
+    public double firstDerivative(double x){
+    	return 5*a*Math.pow(x,4) + 4*b*Math.pow(x,3) + 3*c*Math.pow(x,2) + 2*d*x + e;
+    }
+    
+    public double secondDerivative(double x){
+    	return 5*4*a*Math.pow(x,3) + 4*3*b*Math.pow(x,2) + 3*2*c*x + 2*d;
+    }
+    
+    public boolean isConcaveUp(double x){
+    	return secondDerivative(x) > 0;
     }
 
     public double evaluateArcLength(){
@@ -81,36 +81,12 @@ public class Spline
 
         for(int i=0; i<arcLengthIntegral.length; i++) {
         	arcLengthIntegral[i] = integral;
-        	integral += Math.sqrt(1+Math.pow(eval(a,2), 2)) * dx;
+        	integral += Math.sqrt(1+Math.pow(secondDerivative(a), 2)) * dx;
         	a += dx;	
         }
-
         return integral;
     }
-
-
-
-    public double[] getXandY(double percentage) {
-        double[] result = new double[2];
-
-        percentage = Math.max(Math.min(percentage, 1), 0);
-        double x = arcLengthIntegral.length * percentage;
-        double y = arcLengthIntegral[(int)(x)];
-        x *= dx;
-        
-        result[0] = x;
-        result[1] = y;
-
-        return result;
-    }
-
-    public void printCenter(){
-        System.out.println("X -> " + getXandY(0.5)[0] + "\n" + "Y -> " + getXandY(0.5)[1]);
-    }
-    
-    
-
-
+   
     //GETTERS
 
     public double getA() {
@@ -153,7 +129,4 @@ public class Spline
         double[] coeff = {a,b,c,d,e};
         return coeff;
     }
-
-
-
 }

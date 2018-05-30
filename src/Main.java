@@ -13,9 +13,6 @@ public class Main {
 
         System.out.println("Distance " + s.getDistance());
 
-        s.printCenter();
-
-
         System.out.println("ArcLength " + s.getArcLength());
     }
 }
