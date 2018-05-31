@@ -31,12 +31,12 @@ public class Spline {
         double yp1_hat = Math.tan(theta1);
 
         //Here I go straight for the Quintic
-        /*a = -(3 * (yp0_hat + yp1_hat)) / (distance * distance * distance * distance);
+        a = -(3 * (yp0_hat + yp1_hat)) / (distance * distance * distance * distance);
         b = (8 * yp0_hat + 7 * yp1_hat) / (distance * distance * distance);
         c = -(6 * yp0_hat + 4 * yp1_hat) / (distance * distance);
         d = 0;
         e = yp0_hat;
-        */
+        
         arcLength = evaluateArcLength();
         
 
@@ -124,7 +124,7 @@ public class Spline {
 
         for(int i=0; i<arcLengthIntegral.length; i++) {
         	arcLengthIntegral[i] = integral;
-        	integral += Math.sqrt(1+Math.pow(secondDerivative(a), 2)) * dx;
+        	integral += Math.sqrt(1+Math.pow(firstDerivative(a), 2)) * dx;
         	a += dx;	
         }
         return integral;
@@ -173,5 +173,13 @@ public class Spline {
     public double[] getCoefficients(){
         double[] coeff = {a,b,c,d,e};
         return coeff;
+    }
+    
+    public double[] getArcLengths(){
+    	return arcLengthIntegral;
+    }
+    
+    public double getDX(){
+    	return dx;
     }
 }

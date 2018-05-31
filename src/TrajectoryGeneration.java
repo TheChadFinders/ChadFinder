@@ -10,8 +10,11 @@ public class TrajectoryGeneration {
 	private double dt;
 	private double x = 0;
 	private Spline s;
-	private int index;
+	private int index = 0;
 	private double currentUpperPos = 0, currentLowerPos = 0, currentUpperVel, currentLowerVel;
+	private double currentInnerArcLength = 0;
+	private double cruiseVel;
+	private double decelerateDistance;
 	private ArrayList<TrajectoryPoint> upperWheel = new ArrayList<TrajectoryPoint>();
 	private ArrayList<TrajectoryPoint> lowerWheel = new ArrayList<TrajectoryPoint>();
 	
@@ -27,6 +30,8 @@ public class TrajectoryGeneration {
 		this.finalVelocity = finalVel;
 		this.currentLowerVel = initialVel;
 		this.currentUpperVel = initialVel;
+		this.cruiseVel = Math.min(getCruiseVel(), maxVelocity);
+		this.decelerateDistance = getDecelerateDistance();
 	}
 	
 	private enum MotionState{
@@ -60,6 +65,10 @@ public class TrajectoryGeneration {
 		double denom = maxAcceleration / (maxAcceleration + maxDeceleration);
 		return Math.sqrt(first * denom + Math.pow(initialVelocity, 2));
 	}
+	
+	public double getDecelerateDistance(){
+		return (Math.pow(cruiseVel, 2) - Math.pow(initialVelocity, 2)) / (2 * maxDeceleration);
+	}
 
 	public void generate(){
 		while(x < s.getDistance()){
@@ -73,9 +82,36 @@ public class TrajectoryGeneration {
 					lower.vel = currentLowerVel;
 					
 					double velRatio = s.getWheelVelRatio(x);
+					currentUpperVel = currentLowerVel * velRatio;
+					currentUpperPos += currentUpperVel * dt;
+					
+					double inVelRatio = s.getInnVelRatio(x, false);
+					double innerVel = currentLowerVel / inVelRatio;
+					currentInnerArcLength += innerVel * dt;
+					
+					x = inverseArcLength(currentInnerArcLength);
+				}
+				else {
+					
 				}
 			}
 		}
+	}
+	
+	public double inverseArcLength(double arcLength){
+		while(index < s.getArcLengths().length && arcLength > s.getArcLengths()[index]){
+			index++;
+		}
+		return index * s.getDX();
+	}
+	
+	private void updateMotionState(){
+		if(getState() == MotionState.ACCELERATING){
+			if(currentUpperVel >= cruiseVel || currentLowerVel >= cruiseVel){
+				setState(MotionState.CRUISING);
+			}
+		}
+		
 	}
 	
 }

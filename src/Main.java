@@ -6,8 +6,15 @@ public class Main {
         double y1 = 3;
         double theta0 = Math.PI / 3;
         double theta1 = -Math.PI / 8;
+        double maxv = 2;
+        double maxa = 6;
+        double maxd = 5;
+        
+        
 
         Spline s = new Spline(x0, y0, theta0, x1, y1, theta1);
+        
+        TrajectoryGeneration t = new TrajectoryGeneration(maxv, maxa, maxd, s.getArcLength(), 0, 0, s);
 
         System.out.println(s);
 
@@ -15,8 +22,6 @@ public class Main {
 
         System.out.println("ArcLength " + s.getArcLength());
         
-        System.out.println("GetRatio " + s.getWheelVelRatio(0));
-        System.out.println("GetRatio " + s.getWheelVelRatio(0.5));
-        System.out.println("GetRatio " + s.getWheelVelRatio(1));
+        System.out.println(t.inverseArcLength(1.951));
     }
 }
