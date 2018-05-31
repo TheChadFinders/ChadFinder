@@ -86,6 +86,8 @@ public class Spline {
         }
         return integral;
     }
+    
+    
    
     //GETTERS
 
