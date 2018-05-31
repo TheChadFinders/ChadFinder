@@ -15,6 +15,7 @@ public class TrajectoryGeneration {
 	private double currentInnerArcLength = 0;
 	private double cruiseVel;
 	private double decelerateDistance;
+	private double currentTime;
 	private boolean finished = false;
 	private ArrayList<TrajectoryPoint> upperWheel = new ArrayList<TrajectoryPoint>();
 	private ArrayList<TrajectoryPoint> lowerWheel = new ArrayList<TrajectoryPoint>();
@@ -34,6 +35,7 @@ public class TrajectoryGeneration {
 		this.cruiseVel = Math.min(getCruiseVel(), maxVelocity);
 		this.decelerateDistance = getDecelerateDistance();
 		this.dt = dt;
+		this.currentTime = 0;
 		setState(MotionState.ACCELERATING);
 		finished = false;
 	}
@@ -89,6 +91,7 @@ public class TrajectoryGeneration {
 					if(getState() == MotionState.ACCELERATING){
 						lower.pos = currentLowerPos;
 						lower.vel = currentLowerVel;
+						lower.time = currentTime;
 
 						double velRatio = s.getWheelVelRatio(x);
 						currentUpperVel = currentLowerVel * velRatio;
@@ -96,7 +99,8 @@ public class TrajectoryGeneration {
 						
 						upper.pos = currentUpperPos;
 						upper.vel = currentUpperVel;
-						
+						upper.time = currentTime;
+
 						lowerWheel.add(lower);
 						upperWheel.add(upper);
 
@@ -115,6 +119,7 @@ public class TrajectoryGeneration {
 					if(getState() == MotionState.ACCELERATING){
 						upper.pos = currentUpperPos;
 						upper.vel = currentUpperVel;
+						upper.time = currentTime;
 
 						double velRatio = s.getWheelVelRatio(x);
 						currentLowerVel = currentUpperVel / velRatio;
@@ -122,7 +127,8 @@ public class TrajectoryGeneration {
 						
 						lower.pos = currentLowerPos;
 						lower.vel = currentLowerVel;
-						
+						lower.time = currentTime;
+
 						lowerWheel.add(lower);
 						upperWheel.add(upper);
 
@@ -143,13 +149,15 @@ public class TrajectoryGeneration {
 					if(getState() == MotionState.CRUISING){
 						lower.pos = currentLowerPos;
 						lower.vel = currentLowerVel;
-						
+						lower.time = currentTime;
+
 						double velRatio = s.getWheelVelRatio(x);
 						currentUpperVel = currentLowerVel * velRatio;
 						currentUpperPos += currentUpperVel * dt;
 						
 						upper.pos = currentUpperPos;
 						upper.vel = currentUpperVel;
+						upper.time = currentTime;
 						
 						lowerWheel.add(lower);
 						upperWheel.add(upper);
@@ -169,6 +177,7 @@ public class TrajectoryGeneration {
 					if(getState() == MotionState.CRUISING){
 						upper.pos = currentUpperPos;
 						upper.vel = currentUpperVel;
+						upper.time = currentTime;
 
 						double velRatio = s.getWheelVelRatio(x);
 						currentLowerVel = currentUpperVel / velRatio;
@@ -176,7 +185,8 @@ public class TrajectoryGeneration {
 						
 						lower.pos = currentLowerPos;
 						lower.vel = currentLowerVel;
-						
+						lower.time = currentTime;
+
 						lowerWheel.add(lower);
 						upperWheel.add(upper);
 
@@ -195,6 +205,7 @@ public class TrajectoryGeneration {
 
 					lower.pos = currentLowerPos;
 					lower.vel = currentLowerVel;
+					lower.time = currentTime;
 
 					double velRatio = s.getWheelVelRatio(x);
 					currentUpperVel = currentLowerVel * velRatio;
@@ -202,6 +213,7 @@ public class TrajectoryGeneration {
 
 					upper.pos = currentUpperPos;
 					upper.vel = currentUpperVel;
+					upper.time = currentTime;
 
 					lowerWheel.add(lower);
 					upperWheel.add(upper);
@@ -218,6 +230,7 @@ public class TrajectoryGeneration {
 					
 					upper.pos = currentUpperPos;
 					upper.vel = currentUpperVel;
+					upper.time = currentTime;
 
 					double velRatio = s.getWheelVelRatio(x);
 					currentLowerVel = currentUpperVel / velRatio;
@@ -225,6 +238,7 @@ public class TrajectoryGeneration {
 
 					lower.pos = currentLowerPos;
 					lower.vel = currentLowerVel;
+					lower.time = currentTime;
 
 					lowerWheel.add(lower);
 					upperWheel.add(upper);
@@ -236,6 +250,7 @@ public class TrajectoryGeneration {
 					x = inverseArcLength(currentInnerArcLength);
 				}
 			}
+			currentTime += dt;
 		}
 	}
 	
