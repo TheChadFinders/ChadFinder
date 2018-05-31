@@ -13,9 +13,10 @@ public class Main {
 
         System.out.println("Distance " + s.getDistance());
 
-        s.printCenter();
-
-
         System.out.println("ArcLength " + s.getArcLength());
+        
+        System.out.println("GetRatio " + s.getWheelVelRatio(0));
+        System.out.println("GetRatio " + s.getWheelVelRatio(0.5));
+        System.out.println("GetRatio " + s.getWheelVelRatio(1));
     }
 }
