@@ -14,6 +14,8 @@ public class Spline {
     private final double dx = 0.00001;
     private double arcLength;
     private double[] arcLengthIntegral;
+    private double upperArcLength;
+    private double lowerArcLength;
     
     private final double width = 0.1;
 
@@ -48,7 +50,9 @@ public class Spline {
                 "B -> " + b + "\n" +
                 "C -> " + c + "\n" +
                 "D -> " + d + "\n" +
-                "E -> " + e + "\n";
+                "E -> " + e + "\n" +
+                "Upper Arc Length -> " + upperArcLength + "\n" +
+                "Lower Arc Length -> " + lowerArcLength + "\n";
         return s;
     }
 
@@ -125,6 +129,8 @@ public class Spline {
         for(int i=0; i<arcLengthIntegral.length; i++) {
         	arcLengthIntegral[i] = integral;
         	integral += Math.sqrt(1+Math.pow(firstDerivative(a), 2)) * dx;
+        	upperArcLength += getVel(a, true) * dx;
+        	lowerArcLength += getVel(a, false) * dx;
         	a += dx;	
         }
         return integral;
@@ -157,6 +163,14 @@ public class Spline {
     public double getArcLength() {
 		return arcLength;
 	}
+    
+    public double getUpperArcLength(){
+    	return upperArcLength;
+    }
+    
+    public double getLowerArcLength(){
+    	return lowerArcLength;
+    }
     
 	public double getDistance() {
         return distance;

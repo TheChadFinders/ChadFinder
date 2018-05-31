@@ -14,7 +14,7 @@ public class Main {
 
         Spline s = new Spline(x0, y0, theta0, x1, y1, theta1);
         
-        TrajectoryGeneration t = new TrajectoryGeneration(maxv, maxa, maxd, s.getArcLength(), 0, 0, s);
+        TrajectoryGeneration t = new TrajectoryGeneration(maxv, maxa, maxd, s.getArcLength(), 0, 0, 0.01, s);
 
         System.out.println(s);
 
@@ -22,6 +22,8 @@ public class Main {
 
         System.out.println("ArcLength " + s.getArcLength());
         
-        System.out.println(t.inverseArcLength(1.951));
+        t.generate();
+        
+        System.out.println(t);
     }
 }

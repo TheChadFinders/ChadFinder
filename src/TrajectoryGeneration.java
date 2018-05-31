@@ -15,11 +15,12 @@ public class TrajectoryGeneration {
 	private double currentInnerArcLength = 0;
 	private double cruiseVel;
 	private double decelerateDistance;
+	private boolean finished = false;
 	private ArrayList<TrajectoryPoint> upperWheel = new ArrayList<TrajectoryPoint>();
 	private ArrayList<TrajectoryPoint> lowerWheel = new ArrayList<TrajectoryPoint>();
 	
 	public TrajectoryGeneration(double maxVelocity, double maxAcceleration, double maxDeceleration,
-			double arcLength, double initialVel, double finalVel, Spline spline) {
+			double arcLength, double initialVel, double finalVel, double dt, Spline spline) {
 		// TODO Auto-generated constructor stub
 		this.maxVelocity = maxVelocity;
 		this.maxAcceleration = maxAcceleration;
@@ -32,6 +33,9 @@ public class TrajectoryGeneration {
 		this.currentUpperVel = initialVel;
 		this.cruiseVel = Math.min(getCruiseVel(), maxVelocity);
 		this.decelerateDistance = getDecelerateDistance();
+		this.dt = dt;
+		setState(MotionState.ACCELERATING);
+		finished = false;
 	}
 	
 	private enum MotionState{
@@ -71,28 +75,165 @@ public class TrajectoryGeneration {
 	}
 
 	public void generate(){
-		while(x < s.getDistance()){
+		System.out.println(s.getArcLengths().length);
+		while(x < 5 && index < 422290){
+			System.out.println(currentLowerVel + " " + currentUpperVel);
 			TrajectoryPoint upper = new TrajectoryPoint();
 			TrajectoryPoint lower = new TrajectoryPoint();
 			if(getState() == MotionState.ACCELERATING){
 				if(s.isConcaveUp(x)){
 					currentLowerPos += currentLowerVel * dt + maxAcceleration * dt * dt * 0.5;
 					currentLowerVel = currentLowerVel + maxAcceleration * dt;
+					updateMotionState();
+					
+					if(getState() == MotionState.ACCELERATING){
+						lower.pos = currentLowerPos;
+						lower.vel = currentLowerVel;
+
+						double velRatio = s.getWheelVelRatio(x);
+						currentUpperVel = currentLowerVel * velRatio;
+						currentUpperPos += currentUpperVel * dt;
+						
+						upper.pos = currentUpperPos;
+						upper.vel = currentUpperVel;
+						
+						lowerWheel.add(lower);
+						upperWheel.add(upper);
+
+						double inVelRatio = s.getInnVelRatio(x, false);
+						double innerVel = currentLowerVel / inVelRatio;
+						currentInnerArcLength += innerVel * dt;
+
+						x = inverseArcLength(currentInnerArcLength);
+					}
+				}
+				else{
+					currentUpperPos += currentUpperVel * dt + maxAcceleration * dt * dt * 0.5;
+					currentUpperVel = currentUpperVel + maxAcceleration * dt;
+					updateMotionState();
+					
+					if(getState() == MotionState.ACCELERATING){
+						upper.pos = currentUpperPos;
+						upper.vel = currentUpperVel;
+
+						double velRatio = s.getWheelVelRatio(x);
+						currentLowerVel = currentUpperVel / velRatio;
+						currentLowerPos += currentLowerVel * dt;
+						
+						lower.pos = currentLowerPos;
+						lower.vel = currentLowerVel;
+						
+						lowerWheel.add(lower);
+						upperWheel.add(upper);
+
+						double inVelRatio = s.getInnVelRatio(x, true);
+						double innerVel = currentUpperVel / inVelRatio;
+						currentInnerArcLength += innerVel * dt;
+
+						x = inverseArcLength(currentInnerArcLength);
+					}
+				}
+			}
+			else if(getState() == MotionState.CRUISING){
+				if(s.isConcaveUp(x)){
+					currentLowerPos += cruiseVel * dt;
+					currentLowerVel = cruiseVel;
+					updateMotionState();
+					
+					if(getState() == MotionState.CRUISING){
+						lower.pos = currentLowerPos;
+						lower.vel = currentLowerVel;
+						
+						double velRatio = s.getWheelVelRatio(x);
+						currentUpperVel = currentLowerVel * velRatio;
+						currentUpperPos += currentUpperVel * dt;
+						
+						upper.pos = currentUpperPos;
+						upper.vel = currentUpperVel;
+						
+						lowerWheel.add(lower);
+						upperWheel.add(upper);
+
+						double inVelRatio = s.getInnVelRatio(x, false);
+						double innerVel = currentLowerVel / inVelRatio;
+						currentInnerArcLength += innerVel * dt;
+
+						x = inverseArcLength(currentInnerArcLength);
+					}
+				}
+				else{
+					currentUpperPos += cruiseVel * dt;
+					currentUpperVel = cruiseVel;
+					updateMotionState();
+					
+					if(getState() == MotionState.CRUISING){
+						upper.pos = currentUpperPos;
+						upper.vel = currentUpperVel;
+
+						double velRatio = s.getWheelVelRatio(x);
+						currentLowerVel = currentUpperVel / velRatio;
+						currentLowerPos += currentLowerVel * dt;
+						
+						lower.pos = currentLowerPos;
+						lower.vel = currentLowerVel;
+						
+						lowerWheel.add(lower);
+						upperWheel.add(upper);
+
+						double inVelRatio = s.getInnVelRatio(x, true);
+						double innerVel = currentUpperVel / inVelRatio;
+						currentInnerArcLength += innerVel * dt;
+
+						x = inverseArcLength(currentInnerArcLength);
+					}
+				}
+			}
+			else{
+				if(s.isConcaveUp(x)){
+					currentLowerPos += currentLowerVel * dt - maxDeceleration * dt * dt * 0.5;
+					currentLowerVel = currentLowerVel - maxDeceleration * dt;
+
 					lower.pos = currentLowerPos;
 					lower.vel = currentLowerVel;
-					
+
 					double velRatio = s.getWheelVelRatio(x);
 					currentUpperVel = currentLowerVel * velRatio;
 					currentUpperPos += currentUpperVel * dt;
-					
+
+					upper.pos = currentUpperPos;
+					upper.vel = currentUpperVel;
+
+					lowerWheel.add(lower);
+					upperWheel.add(upper);
+
 					double inVelRatio = s.getInnVelRatio(x, false);
 					double innerVel = currentLowerVel / inVelRatio;
 					currentInnerArcLength += innerVel * dt;
-					
+
 					x = inverseArcLength(currentInnerArcLength);
 				}
-				else {
+				else{
+					currentUpperPos += currentUpperVel * dt - maxDeceleration * dt * dt * 0.5;
+					currentUpperVel = currentUpperVel - maxDeceleration * dt;
 					
+					upper.pos = currentUpperPos;
+					upper.vel = currentUpperVel;
+
+					double velRatio = s.getWheelVelRatio(x);
+					currentLowerVel = currentUpperVel / velRatio;
+					currentLowerPos += currentLowerVel * dt;
+
+					lower.pos = currentLowerPos;
+					lower.vel = currentLowerVel;
+
+					lowerWheel.add(lower);
+					upperWheel.add(upper);
+
+					double inVelRatio = s.getInnVelRatio(x, true);
+					double innerVel = currentUpperVel / inVelRatio;
+					currentInnerArcLength += innerVel * dt;
+
+					x = inverseArcLength(currentInnerArcLength);
 				}
 			}
 		}
@@ -102,16 +243,26 @@ public class TrajectoryGeneration {
 		while(index < s.getArcLengths().length && arcLength > s.getArcLengths()[index]){
 			index++;
 		}
+		if(arcLength > s.getArcLengths()[index]) {
+			finished = true;
+		}
 		return index * s.getDX();
 	}
 	
 	private void updateMotionState(){
+		if(s.getUpperArcLength() - currentUpperPos <= decelerateDistance ||
+				s.getLowerArcLength() - currentLowerPos <= decelerateDistance){
+			setState(MotionState.DECELERATING);
+		}
 		if(getState() == MotionState.ACCELERATING){
 			if(currentUpperVel >= cruiseVel || currentLowerVel >= cruiseVel){
 				setState(MotionState.CRUISING);
 			}
 		}
-		
+	}
+	
+	public String toString(){
+		return "" + currentUpperPos;
 	}
 	
 }
