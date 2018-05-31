@@ -101,9 +101,20 @@ public class Spline {
     	return Math.sqrt(Math.pow(getXVelocity(x,isUp), 2) + Math.pow(getYVelocity(x, isUp), 2));
     }
     
+    public double getInnVel(double x) {
+    	return Math.sqrt(1 + Math.pow(firstDerivative(x), 2));
+    }
+    
+    
     public double getWheelVelRatio(double x) {
     	return getVel(x, true) / getVel(x, false);
     }
+    
+    public double getInnVelRatio(double x, boolean isUp) {
+    	return getVel(x, isUp) / getInnVel(x);
+    }
+    
+    
     
     public double evaluateArcLength(){
         double a = 0;
