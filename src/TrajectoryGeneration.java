@@ -72,7 +72,7 @@ public class TrajectoryGeneration {
 					lower.pos = currentLowerPos;
 					lower.vel = currentLowerVel;
 					
-				
+					double velRatio = s.getWheelVelRatio(x);
 				}
 			}
 		}
