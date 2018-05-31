@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 public class TrajectoryGeneration {
-
+  
 	private double maxVelocity;
 	private double maxAcceleration;
 	private double maxDeceleration;
