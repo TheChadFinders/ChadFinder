@@ -10,6 +10,7 @@ public class Spline {
     private double distance;
     private double xOffset;
     private double yOffset;
+    private double thetaOffset;
 
     private final double dx = 0.00001;
     private double arcLength;
@@ -23,15 +24,21 @@ public class Spline {
         System.out.println("Reticulating splines...");
         xOffset = x0;
         yOffset = y0;
-
+        
+        thetaOffset = Math.atan2(y1-y0, x1-x0);
+        
         distance = Math.sqrt((x1-x0) * (x1-x0) + (y1-y0) * (y1-y0));
+        
         if (distance==0){
             return;
         }
 
-        double yp0_hat = Math.tan(theta0);
-        double yp1_hat = Math.tan(theta1);
-
+        double yp0_hat = Math.tan(twoAngleDifference(theta0, thetaOffset));
+        double yp1_hat = Math.tan(twoAngleDifference(theta1, thetaOffset));
+        
+        System.out.println(Math.toDegrees(theta0 - thetaOffset));
+        System.out.println(Math.toDegrees(theta1 - thetaOffset));
+        
         //Here I go straight for the Quintic
         a = -(3 * (yp0_hat + yp1_hat)) / (distance * distance * distance * distance);
         b = (8 * yp0_hat + 7 * yp1_hat) / (distance * distance * distance);
@@ -194,4 +201,19 @@ public class Spline {
     public double getDX(){
     	return dx;
     }
+    
+    public double twoAngleDifference(double theta0, double theta1) {
+    	
+    	double theta = theta0-theta1;
+    	while(theta >= Math.PI) {
+    		theta -= 2.0 * Math.PI;
+    	}
+    	while(theta < -Math.PI) {
+    		theta += 2.0 * Math.PI;
+    	}
+    	
+    	return theta;
+    	
+    }
+    
 }
