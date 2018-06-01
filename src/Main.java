@@ -8,13 +8,13 @@ public class Main {
         double theta1 = -Math.PI / 8;
         double maxv = 2;
         double maxa = 6;
-        double maxd = 5;
+        double maxd = 2;
         
         
 
         Spline s = new Spline(x0, y0, theta0, x1, y1, theta1);
         
-        TrajectoryGeneration t = new TrajectoryGeneration(maxv, maxa, maxd, s.getArcLength(), 0, 0, 0.01, s);
+        TrajectoryGeneration t = new TrajectoryGeneration(maxv, maxa, maxd, s.getArcLength(), 0, 0, 0.02, s);
 
         System.out.println(s);
 
@@ -24,6 +24,6 @@ public class Main {
         
         t.generate();
         
-        System.out.println(t);
+        //System.out.println(t);
     }
 }

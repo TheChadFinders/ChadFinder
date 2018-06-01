@@ -17,7 +17,7 @@ public class Spline {
     private double upperArcLength;
     private double lowerArcLength;
     
-    private final double width = 0.1;
+    private final double width = 0.2;
 
     public Spline(double x0, double y0, double theta0, double x1, double y1, double theta1){
         System.out.println("Reticulating splines...");
@@ -117,8 +117,6 @@ public class Spline {
     public double getInnVelRatio(double x, boolean isUp) {
     	return getVel(x, isUp) / getInnVel(x);
     }
-    
-    
     
     public double evaluateArcLength(){
         double a = 0;

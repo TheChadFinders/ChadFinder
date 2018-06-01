@@ -77,9 +77,9 @@ public class TrajectoryGeneration {
 	}
 
 	public void generate(){
-		System.out.println(s.getArcLengths().length);
-		while(x < 5 && index < 422290){
-			System.out.println(currentLowerVel + " " + currentUpperVel);
+		//System.out.println(s.getArcLengths().length);
+		while(x < s.getDistance() && getState() != MotionState.END){
+			System.out.println(currentLowerVel + " " + currentUpperVel + " " + index);
 			TrajectoryPoint upper = new TrajectoryPoint();
 			TrajectoryPoint lower = new TrajectoryPoint();
 			if(getState() == MotionState.ACCELERATING){
@@ -199,6 +199,7 @@ public class TrajectoryGeneration {
 				}
 			}
 			else{
+				updateMotionState();
 				if(s.isConcaveUp(x)){
 					currentLowerPos += currentLowerVel * dt - maxDeceleration * dt * dt * 0.5;
 					currentLowerVel = currentLowerVel - maxDeceleration * dt;
@@ -258,8 +259,13 @@ public class TrajectoryGeneration {
 		while(index < s.getArcLengths().length && arcLength > s.getArcLengths()[index]){
 			index++;
 		}
-		if(arcLength > s.getArcLengths()[index]) {
+		/*
+		if(arcLength < s.getArcLengths()[index]) {
 			finished = true;
+			System.out.println("" + index * s.getDX());
+		}*/
+		if(getState() == MotionState.END){
+			index = s.getArcLengths().length;
 		}
 		return index * s.getDX();
 	}
@@ -273,6 +279,9 @@ public class TrajectoryGeneration {
 			if(currentUpperVel >= cruiseVel || currentLowerVel >= cruiseVel){
 				setState(MotionState.CRUISING);
 			}
+		}
+		if(currentUpperVel < finalVelocity || currentLowerVel < finalVelocity) {
+			setState(MotionState.END);
 		}
 	}
 	
