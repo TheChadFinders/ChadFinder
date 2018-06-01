@@ -4,8 +4,8 @@ public class Main {
         double y0 = 0.0;
         double x1 = 3;
         double y1 = 3;
-        double theta0 = Math.PI / 3;
-        double theta1 = -Math.PI / 8;
+        double theta0 = 0;
+        double theta1 = 0;
         double maxv = 2;
         double maxa = 6;
         double maxd = 5;
