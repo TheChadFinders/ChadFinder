@@ -10,24 +10,30 @@ public class TrajectoryGeneration {
 	private double dt;
 	private double x = 0;
 	private Spline s;
+	private Spline[] splines;
 	private int index = 0;
+	private int splineIndex = 0;
 	private double currentUpperPos = 0, currentLowerPos = 0, currentUpperVel, currentLowerVel;
 	private double currentInnerArcLength = 0;
 	private double cruiseVel;
 	private double decelerateDistance;
 	private double currentTime;
+	private double totalUpperArcLength;
+	private double totalLowerArcLength;
+	private double previousUpperArcLengths;
+	private double previousLowerArcLengths;
+	private double totalXDistance;
 	private boolean finished = false;
 	private ArrayList<TrajectoryPoint> upperWheel = new ArrayList<TrajectoryPoint>();
 	private ArrayList<TrajectoryPoint> lowerWheel = new ArrayList<TrajectoryPoint>();
 	
 	public TrajectoryGeneration(double maxVelocity, double maxAcceleration, double maxDeceleration,
-			double arcLength, double initialVel, double finalVel, double dt, Spline spline) {
+			double arcLength, double initialVel, double finalVel, double dt, Spline[] splines) {
 		// TODO Auto-generated constructor stub
 		this.maxVelocity = maxVelocity;
 		this.maxAcceleration = maxAcceleration;
 		this.maxDeceleration = maxDeceleration;
 		this.arcLength = arcLength;
-		this.s = spline;
 		this.initialVelocity = initialVel;
 		this.finalVelocity = finalVel;
 		this.currentLowerVel = initialVel;
@@ -36,8 +42,18 @@ public class TrajectoryGeneration {
 		this.decelerateDistance = getDecelerateDistance();
 		this.dt = dt;
 		this.currentTime = 0;
+		this.previousUpperArcLengths = 0;
+		this.previousLowerArcLengths = 0;
 		setState(MotionState.ACCELERATING);
 		finished = false;
+		for(Spline s : splines){
+			this.totalUpperArcLength += s.getUpperArcLength();
+			this.totalLowerArcLength += s.getLowerArcLength();
+			this.totalXDistance += s.getDistance();
+		}
+		this.splines = splines;
+		this.splineIndex = 0;
+		this.s = splines[0];
 	}
 	
 	private enum MotionState{
@@ -59,11 +75,6 @@ public class TrajectoryGeneration {
 		
 		public TrajectoryPoint(){
 		}
-		
-		public TrajectoryPoint(double pos, double vel, double time){
-			this.pos = pos;
-			this.vel = vel;
-		}
 	}
 	
 	public double getCruiseVel(){
@@ -78,7 +89,7 @@ public class TrajectoryGeneration {
 
 	public void generate(){
 		//System.out.println(s.getArcLengths().length);
-		while(x < s.getDistance() && getState() != MotionState.END){
+		while(x < this.totalXDistance && getState() != MotionState.END){
 			System.out.println(currentLowerVel + " " + currentUpperVel + " " + index);
 			TrajectoryPoint upper = new TrajectoryPoint();
 			TrajectoryPoint lower = new TrajectoryPoint();
@@ -271,17 +282,35 @@ public class TrajectoryGeneration {
 	}
 	
 	private void updateMotionState(){
-		if(s.getUpperArcLength() - currentUpperPos <= decelerateDistance ||
-				s.getLowerArcLength() - currentLowerPos <= decelerateDistance){
+		//System.out.println(currentUpperPos - previousUpperArcLengths);
+		if(currentUpperPos - previousUpperArcLengths >= s.getUpperArcLength() || 
+				currentLowerPos - previousLowerArcLengths >= s.getLowerArcLength()){
+			if(splineIndex < splines.length - 1){
+				splineIndex++;
+				index = 0;
+				currentInnerArcLength = 0;
+				previousUpperArcLengths = currentUpperPos;
+				previousLowerArcLengths = currentUpperPos;
+				this.s = splines[splineIndex];
+				System.out.println(s.getArcLength());
+			}
+		}
+		if(this.totalUpperArcLength - currentUpperPos <= decelerateDistance ||
+				this.totalLowerArcLength - currentLowerPos <= decelerateDistance){
 			setState(MotionState.DECELERATING);
+			//System.out.println("DECELERATING");
 		}
 		if(getState() == MotionState.ACCELERATING){
 			if(currentUpperVel >= cruiseVel || currentLowerVel >= cruiseVel){
 				setState(MotionState.CRUISING);
+				System.out.println("CRUISING");
 			}
 		}
 		if(currentUpperVel < finalVelocity || currentLowerVel < finalVelocity) {
 			setState(MotionState.END);
+			System.out.println("END");
+			System.out.println(currentUpperPos);
+			System.out.println(currentLowerPos);
 		}
 	}
 	
