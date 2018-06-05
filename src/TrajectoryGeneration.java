@@ -54,6 +54,7 @@ public class TrajectoryGeneration {
 		this.splines = splines;
 		this.splineIndex = 0;
 		this.s = splines[0];
+		System.out.println(decelerateDistance + " decelerate distance");
 	}
 	
 	private enum MotionState{
@@ -90,7 +91,7 @@ public class TrajectoryGeneration {
 	public void generate(){
 		//System.out.println(s.getArcLengths().length);
 		while(x < this.totalXDistance && getState() != MotionState.END){
-			System.out.println(currentLowerVel + " " + currentUpperVel + " " + index);
+			System.out.println(currentLowerVel + " " + currentLowerPos + " " + currentUpperVel + " " + currentUpperPos + " " + index);
 			TrajectoryPoint upper = new TrajectoryPoint();
 			TrajectoryPoint lower = new TrajectoryPoint();
 			if(getState() == MotionState.ACCELERATING){
@@ -117,7 +118,7 @@ public class TrajectoryGeneration {
 
 						double inVelRatio = s.getInnVelRatio(x, false);
 						double innerVel = currentLowerVel / inVelRatio;
-						currentInnerArcLength += innerVel * dt;
+						currentInnerArcLength += innerVel * dt + maxAcceleration / inVelRatio * dt * dt * 0.5;
 
 						x = inverseArcLength(currentInnerArcLength);
 					}
@@ -145,7 +146,7 @@ public class TrajectoryGeneration {
 
 						double inVelRatio = s.getInnVelRatio(x, true);
 						double innerVel = currentUpperVel / inVelRatio;
-						currentInnerArcLength += innerVel * dt;
+						currentInnerArcLength += innerVel * dt + maxAcceleration / inVelRatio * dt * dt * 0.5;;
 
 						x = inverseArcLength(currentInnerArcLength);
 					}
@@ -295,10 +296,10 @@ public class TrajectoryGeneration {
 				System.out.println(s.getArcLength());
 			}
 		}
-		if(this.totalUpperArcLength - currentUpperPos <= decelerateDistance ||
-				this.totalLowerArcLength - currentLowerPos <= decelerateDistance){
+		if((this.totalUpperArcLength - currentUpperPos <= decelerateDistance) && (currentUpperVel >= currentLowerVel) ||
+				(this.totalLowerArcLength - currentLowerPos <= decelerateDistance) && (currentUpperVel <= currentLowerVel)){
 			setState(MotionState.DECELERATING);
-			//System.out.println("DECELERATING");
+			System.out.println("DECELERATING");
 		}
 		if(getState() == MotionState.ACCELERATING){
 			if(currentUpperVel >= cruiseVel || currentLowerVel >= cruiseVel){

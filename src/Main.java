@@ -2,14 +2,14 @@ public class Main {
     public static void main(String[] args) {
         double x0 = 0.0;
         double y0 = 0.0;
-        double x1 = 5;
-        double y1 = 5;
+        double x1 = 2.7;
+        double y1 = 1.53;
         double theta0 = 0;
-        double theta1 = Math.toRadians(60);
-        double maxv = 1.75;
+        double theta1 = 0;
+        double maxv = 2.25;
         double maxa = 3;
         double maxd = 3;
-        double dt = .02;
+        double dt = .001;
         
         
 
