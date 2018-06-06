@@ -18,7 +18,7 @@ public class Spline {
     private double upperArcLength;
     private double lowerArcLength;
     
-    private final double width = 0.73/2;
+    private final double width = 0.73;
 
     public Spline(double x0, double y0, double theta0, double x1, double y1, double theta1){
         System.out.println("Reticulating splines...");

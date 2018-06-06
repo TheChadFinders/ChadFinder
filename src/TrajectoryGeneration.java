@@ -1,3 +1,4 @@
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 public class TrajectoryGeneration {
   
@@ -25,7 +26,7 @@ public class TrajectoryGeneration {
 	private double previousLowerArcLengths;
 	private double totalXDistance;
 	private double expected_dt;
-	private boolean finished = false;
+	private boolean isUpperDecelWheel = false;
 	private ArrayList<TrajectoryPoint> upperWheel = new ArrayList<TrajectoryPoint>();
 	private ArrayList<TrajectoryPoint> lowerWheel = new ArrayList<TrajectoryPoint>();
 	
@@ -40,8 +41,6 @@ public class TrajectoryGeneration {
 		this.finalVelocity = finalVel;
 		this.currentLowerVel = initialVel;
 		this.currentUpperVel = initialVel;
-		this.cruiseVel = Math.min(getCruiseVel(), maxVelocity);
-		this.decelerateDistance = getDecelerateDistance();
 		this.dt = calculation_dt;
 		this.expected_dt = dt;
 		this.calculationCurrentTime = 0;
@@ -49,12 +48,41 @@ public class TrajectoryGeneration {
 		this.previousUpperArcLengths = 0;
 		this.previousLowerArcLengths = 0;
 		setState(MotionState.ACCELERATING);
-		finished = false;
 		for(Spline s : splines){
 			this.totalUpperArcLength += s.getUpperArcLength();
 			this.totalLowerArcLength += s.getLowerArcLength();
 			this.totalXDistance += s.getDistance();
 		}
+		this.cruiseVel = Math.min(getCruiseVel(), maxVelocity);
+		this.decelerateDistance = getDecelerateDistance();
+		this.splines = splines;
+		this.splineIndex = 0;
+		this.s = splines[0];
+		System.out.println("cruise vel: " + cruiseVel + " " + getCruiseVel());
+		System.out.println(decelerateDistance + " decelerate distance");
+	}
+	
+	public void configureNewTrajectory(double maxVelocity, double maxAcceleration, double maxDeceleration,
+			double arcLength, double initialVel, double finalVel, Spline[] splines) {
+		// TODO Auto-generated constructor stub
+		this.maxVelocity = maxVelocity;
+		this.maxAcceleration = maxAcceleration;
+		this.maxDeceleration = maxDeceleration;
+		this.arcLength = arcLength;
+		this.initialVelocity = initialVel;
+		this.finalVelocity = finalVel;
+		this.currentLowerVel = initialVel;
+		this.currentUpperVel = initialVel;
+		this.previousUpperArcLengths = 0;
+		this.previousLowerArcLengths = 0;
+		setState(MotionState.ACCELERATING);
+		for(Spline s : splines){
+			this.totalUpperArcLength += s.getUpperArcLength();
+			this.totalLowerArcLength += s.getLowerArcLength();
+			this.totalXDistance += s.getDistance();
+		}
+		this.cruiseVel = Math.min(getCruiseVel(), maxVelocity);
+		this.decelerateDistance = getDecelerateDistance();
 		this.splines = splines;
 		this.splineIndex = 0;
 		this.s = splines[0];
@@ -83,13 +111,13 @@ public class TrajectoryGeneration {
 	}
 	
 	public double getCruiseVel(){
-		double first = Math.pow(finalVelocity, 2) - Math.pow(initialVelocity, 2) + 2*maxDeceleration*arcLength;
+		double first = Math.pow(finalVelocity, 2) - Math.pow(initialVelocity, 2) + 2*maxDeceleration*(totalUpperArcLength < totalLowerArcLength ? totalUpperArcLength : totalLowerArcLength);
 		double denom = maxAcceleration / (maxAcceleration + maxDeceleration);
 		return Math.sqrt(first * denom + Math.pow(initialVelocity, 2));
 	}
 	
 	public double getDecelerateDistance(){
-		return (Math.pow(cruiseVel, 2) - Math.pow(initialVelocity, 2)) / (2 * maxDeceleration);
+		return (Math.pow(finalVelocity, 2) - Math.pow(cruiseVel, 2)) / (2 * -maxDeceleration);
 	}
 
 	public void generate(){
@@ -169,7 +197,7 @@ public class TrajectoryGeneration {
 			}
 			else{
 				updateMotionState();
-				if(s.isConcaveUp(x)){
+				if(!isUpperDecelWheel){
 					currentLowerPos += currentLowerVel * dt - maxDeceleration * dt * dt * 0.5;
 					currentLowerVel = currentLowerVel - maxDeceleration * dt;
 
@@ -200,7 +228,8 @@ public class TrajectoryGeneration {
 			}
 			calculationCurrentTime += dt;
 			if(calculationCurrentTime >= currentTime + expected_dt){
-				System.out.println(currentLowerVel + "," + currentLowerPos + "," + currentUpperVel + "," + currentUpperPos + "," + currentTime);
+				DecimalFormat df = new DecimalFormat("#.####");
+				System.out.println(df.format(currentLowerVel) + "," + df.format(currentLowerPos) + "," + df.format(currentUpperVel) + "," + df.format(currentUpperPos) + "," + df.format(currentTime));
 
 				TrajectoryPoint upper = new TrajectoryPoint();
 				TrajectoryPoint lower = new TrajectoryPoint();
@@ -250,8 +279,14 @@ public class TrajectoryGeneration {
 				System.out.println(s.getArcLength());
 			}
 		}
-		if((this.totalUpperArcLength - currentUpperPos <= decelerateDistance) && (currentUpperVel >= currentLowerVel) ||
-				(this.totalLowerArcLength - currentLowerPos <= decelerateDistance) && (currentUpperVel <= currentLowerVel)){
+		if((this.totalUpperArcLength - currentUpperPos <= decelerateDistance) && (currentUpperVel >= currentLowerVel)
+				&& (getState() == MotionState.CRUISING || getState() == MotionState.ACCELERATING)){
+			isUpperDecelWheel = true;
+			setState(MotionState.DECELERATING);
+		}
+		else if((this.totalLowerArcLength - currentLowerPos <= decelerateDistance) && (currentUpperVel <= currentLowerVel)
+				&& (getState() == MotionState.CRUISING || getState() == MotionState.ACCELERATING)){
+			isUpperDecelWheel = false;
 			setState(MotionState.DECELERATING);
 			//System.out.println("DECELERATING");
 		}
@@ -270,7 +305,7 @@ public class TrajectoryGeneration {
 	}
 	
 	public String toString(){
-		return "" + currentUpperPos;
+		return "Upper Position: " + currentUpperPos + ", Lower Position: " + currentLowerPos;
 	}
 	
 }
