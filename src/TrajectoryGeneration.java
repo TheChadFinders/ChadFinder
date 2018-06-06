@@ -58,8 +58,8 @@ public class TrajectoryGeneration {
 		this.splines = splines;
 		this.splineIndex = 0;
 		this.s = splines[0];
-		System.out.println("cruise vel: " + cruiseVel + " " + getCruiseVel());
-		System.out.println(decelerateDistance + " decelerate distance");
+		//System.out.println("cruise vel: " + cruiseVel + " " + getCruiseVel());
+		//System.out.println(decelerateDistance + " decelerate distance");
 	}
 	
 	public void configureNewTrajectory(double maxVelocity, double maxAcceleration, double maxDeceleration,
@@ -73,9 +73,10 @@ public class TrajectoryGeneration {
 		this.finalVelocity = finalVel;
 		this.currentLowerVel = initialVel;
 		this.currentUpperVel = initialVel;
-		this.previousUpperArcLengths = 0;
-		this.previousLowerArcLengths = 0;
+		this.currentInnerArcLength = 0;
+		this.x = 0;
 		setState(MotionState.ACCELERATING);
+		this.totalXDistance = 0;
 		for(Spline s : splines){
 			this.totalUpperArcLength += s.getUpperArcLength();
 			this.totalLowerArcLength += s.getLowerArcLength();
@@ -85,8 +86,8 @@ public class TrajectoryGeneration {
 		this.decelerateDistance = getDecelerateDistance();
 		this.splines = splines;
 		this.splineIndex = 0;
+		this.index = 0;
 		this.s = splines[0];
-		System.out.println(decelerateDistance + " decelerate distance");
 	}
 	
 	private enum MotionState{
@@ -121,12 +122,14 @@ public class TrajectoryGeneration {
 	}
 
 	public void generate(){
+		//System.out.println(s);
 		//System.out.println(s.getArcLengths().length);
 		while(x < this.totalXDistance && getState() != MotionState.END){
 			if(getState() == MotionState.ACCELERATING){
 				if(s.isConcaveUp(x)){
 					currentLowerPos += currentLowerVel * dt + maxAcceleration * dt * dt * 0.5;
 					currentLowerVel = currentLowerVel + maxAcceleration * dt;
+					//System.out.println("Accelerating");
 					updateMotionState();
 					
 					if(getState() == MotionState.ACCELERATING){
@@ -274,7 +277,7 @@ public class TrajectoryGeneration {
 				index = 0;
 				currentInnerArcLength = 0;
 				previousUpperArcLengths = currentUpperPos;
-				previousLowerArcLengths = currentUpperPos;
+				previousLowerArcLengths = currentLowerPos;
 				this.s = splines[splineIndex];
 				System.out.println(s.getArcLength());
 			}
@@ -296,7 +299,7 @@ public class TrajectoryGeneration {
 				//System.out.println("CRUISING");
 			}
 		}
-		if(currentUpperVel < finalVelocity || currentLowerVel < finalVelocity) {
+		if((currentUpperVel < finalVelocity || currentLowerVel < finalVelocity) && getState() == MotionState.DECELERATING) {
 			setState(MotionState.END);
 			//System.out.println("END");
 			//System.out.println(currentUpperPos);
@@ -307,5 +310,7 @@ public class TrajectoryGeneration {
 	public String toString(){
 		return "Upper Position: " + currentUpperPos + ", Lower Position: " + currentLowerPos;
 	}
-	
+	public double upvel(){
+		return currentLowerVel;
+	}
 }
