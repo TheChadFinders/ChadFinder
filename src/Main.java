@@ -9,7 +9,8 @@ public class Main {
         double maxv = 2.25;
         double maxa = 3;
         double maxd = 3;
-        double dt = .001;
+        double calcdt = 0.001;
+        double dt = 0.02;
         
         
 
@@ -19,13 +20,13 @@ public class Main {
         
         Spline[] splines = {s};
         
-        TrajectoryGeneration t = new TrajectoryGeneration(maxv, maxa, maxd, s.getArcLength(), 0, 0, dt, splines);
+        TrajectoryGeneration t = new TrajectoryGeneration(maxv, maxa, maxd, s.getArcLength(), 0, 0, calcdt, dt, splines);
 
-        System.out.println(s);
+        //System.out.println(s);
 
-        System.out.println("Distance " + s.getDistance());
+        //System.out.println("Distance " + s.getDistance());
 
-        System.out.println("ArcLength " + s.getArcLength());
+        //System.out.println("ArcLength " + s.getArcLength());
         
         t.generate();
         
