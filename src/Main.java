@@ -2,10 +2,10 @@ public class Main {
     public static void main(String[] args) {
         double x0 = 0.0;
         double y0 = 0.0;
-        double x1 = 2.5;
+        double x1 = 0;
         double y1 = 1.53;
-        double theta0 = 0;
-        double theta1 = 0;
+        double theta0 = Math.PI/2;
+        double theta1 = Math.PI/2;
         double maxv = 3;
         double maxa = 3;
         double maxd = 3;
@@ -33,11 +33,11 @@ public class Main {
         
         t.generate();
         //TrajectoryGeneration t2 = new TrajectoryGeneration(maxv, maxa, maxd, g.getArcLength(), 1, 0, calcdt, dt, splines1);
-        t.configureNewTrajectory(maxv, maxa, maxd, g.getArcLength(), 1, 0, splines1);
+      //  t.configureNewTrajectory(maxv, maxa, maxd, g.getArcLength(), 1, 0, splines1);
         //System.out.println("switching");
         //System.out.println(t.upvel());
-        t.generate();
-        System.out.println(t);
+       // t.generate();
+       // System.out.println(t);
         
         //System.out.println(t);
     }

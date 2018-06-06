@@ -310,7 +310,12 @@ public class TrajectoryGeneration {
 	public String toString(){
 		return "Upper Position: " + currentUpperPos + ", Lower Position: " + currentLowerPos;
 	}
-	public double upvel(){
-		return currentLowerVel;
+	
+	public ArrayList<TrajectoryPoint> getLeftWheel(){
+		return upperWheel;
+	}
+	
+	public ArrayList<TrajectoryPoint> getRightWheel(){
+		return lowerWheel;
 	}
 }
