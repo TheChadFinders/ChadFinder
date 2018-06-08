@@ -60,7 +60,7 @@ public class TrajectoryGeneration {
 		this.splines = splines;
 		this.splineIndex = 0;
 		this.s = splines[0];
-		//System.out.println("cruise vel: " + cruiseVel + " " + getCruiseVel());
+		System.out.println("cruise vel: " + cruiseVel + " " + getCruiseVel());
 		System.out.println(decelerateDistance + " decelerate distance");
 	}
 	
@@ -271,16 +271,16 @@ public class TrajectoryGeneration {
 				previousUpperArcLengths = currentUpperPos;
 				previousLowerArcLengths = currentLowerPos;
 				this.s = splines[splineIndex];
-				System.out.println(s.getArcLength());
+				//System.out.println(s.getArcLength());
 			}
 		}
 
-		/*if(getState() == MotionState.DECELERATING){
+		if(getState() == MotionState.DECELERATING){
 			if(isUpperDecelWheel == s.isConcaveUp(x)){
 				setState(MotionState.ACCELERATING);
 				//System.out.println("Accelerating");
 			}
-		}*/
+		}
 		if((this.totalUpperArcLength - currentUpperPos <= getDecelerateDistance(currentUpperVel)) &&
 				(currentUpperVel >= currentLowerVel)
 				&& (getState() == MotionState.CRUISING || getState() == MotionState.ACCELERATING)){
@@ -303,7 +303,7 @@ public class TrajectoryGeneration {
 				//System.out.println("CRUISING");
 			}
 		}
-		if((currentUpperVel < finalVelocity || currentLowerVel < finalVelocity) && getState() == MotionState.DECELERATING) {
+		if((currentUpperVel < finalVelocity && currentLowerVel < finalVelocity) && getState() == MotionState.DECELERATING) {
 			setState(MotionState.END);
 			currentTime += expected_dt;
 			System.out.println(df.format(finalVelocity) + "," + df.format(currentLowerPos) + "," + df.format(finalVelocity) + "," + df.format(currentUpperPos) + "," + df.format(currentTime));

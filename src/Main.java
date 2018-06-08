@@ -6,7 +6,7 @@ public class Main {
         double y1 = 1.53;
         double theta0 = 0;
         double theta1 = 0;
-        double maxv = 1.5;
+        double maxv = 4;
         double maxa = 3;
         double maxd = 3;
         double calcdt = 0.00001;
@@ -21,7 +21,7 @@ public class Main {
         Spline[] splines = {s};
         Spline[] splines1 = {g};
         
-        TrajectoryGeneration t = new TrajectoryGeneration(maxv, maxa, maxd, s.getArcLength(), 0, 0, calcdt, dt, splines);
+        TrajectoryGeneration t = new TrajectoryGeneration(maxv, maxa, maxd, s.getArcLength(), 3, 2, calcdt, dt, splines);
 
         System.out.println(s);
 
