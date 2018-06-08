@@ -2,14 +2,14 @@ public class Main {
     public static void main(String[] args) {
         double x0 = 0.0;
         double y0 = 0.0;
-        double x1 = 0;
+        double x1 = 2.65;
         double y1 = 1.53;
-        double theta0 = Math.PI/2;
-        double theta1 = Math.PI/2;
-        double maxv = 3;
+        double theta0 = 0;
+        double theta1 = 0;
+        double maxv = 1.5;
         double maxa = 3;
         double maxd = 3;
-        double calcdt = 0.001;
+        double calcdt = 0.00001;
         double dt = 0.02;
         
         
@@ -21,9 +21,9 @@ public class Main {
         Spline[] splines = {s};
         Spline[] splines1 = {g};
         
-        TrajectoryGeneration t = new TrajectoryGeneration(2, maxa, maxd, s.getArcLength(), 0, 1, calcdt, dt, splines);
+        TrajectoryGeneration t = new TrajectoryGeneration(maxv, maxa, maxd, s.getArcLength(), 0, 0, calcdt, dt, splines);
 
-        System.out.println(g);
+        System.out.println(s);
 
         System.out.println("Distance " + s.getDistance());
 
@@ -39,6 +39,6 @@ public class Main {
        // t.generate();
        // System.out.println(t);
         
-        //System.out.println(t);
+        System.out.println(t);
     }
 }
