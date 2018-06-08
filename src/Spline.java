@@ -72,7 +72,7 @@ public class Spline {
 
 
     /**
-     *  eval(x,nDerivative): Returns the nDerivative of the function evaluated at x
+     *  firstDerivative(x): Returns the first derivative of the function evaluated at x
      */
     public double firstDerivative(double x){
     	return 5*a*Math.pow(x,4) + 4*b*Math.pow(x,3) + 3*c*Math.pow(x,2) + 2*d*x + e;

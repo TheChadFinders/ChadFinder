@@ -6,10 +6,10 @@ public class Main {
         double y1 = 1.53;
         double theta0 = 0;
         double theta1 = 0;
-        double maxv = 4;
+        double maxv = 2.5;
         double maxa = 3;
         double maxd = 3;
-        double calcdt = 0.00001;
+        double calcdt = 0.0001;
         double dt = 0.02;
         
         
@@ -21,9 +21,9 @@ public class Main {
         Spline[] splines = {s};
         Spline[] splines1 = {g};
         
-        TrajectoryGeneration t = new TrajectoryGeneration(maxv, maxa, maxd, s.getArcLength(), 3, 2, calcdt, dt, splines);
+        TrajectoryGeneration t = new TrajectoryGeneration(maxv, maxa, maxd, s.getArcLength(), 0, 2, calcdt, dt, splines);
 
-        System.out.println(s);
+        System.out.println(g);
 
         System.out.println("Distance " + s.getDistance());
 
@@ -33,10 +33,10 @@ public class Main {
         
         t.generate();
         //TrajectoryGeneration t2 = new TrajectoryGeneration(maxv, maxa, maxd, g.getArcLength(), 1, 0, calcdt, dt, splines1);
-      //  t.configureNewTrajectory(maxv, maxa, maxd, g.getArcLength(), 1, 0, splines1);
+        t.configureNewTrajectory(maxv, maxa, maxd, g.getArcLength(), 2, 0, splines1);
         //System.out.println("switching");
         //System.out.println(t.upvel());
-       // t.generate();
+        t.generate();
        // System.out.println(t);
         
         System.out.println(t);
