@@ -9,6 +9,8 @@ public class Main {
         double maxv = 2.5;
         double maxa = 3;
         double maxd = 3;
+        double initialVel = 0;
+        double finalVel = 0;
         double calcdt = 0.0001;
         double dt = 0.02;
         
@@ -39,7 +41,7 @@ public class Main {
         //System.out.println(g.secondDerivative(0) + "asdfadf");
         
         Trajectory t = new Trajectory(points);
-        t.configureTrajectory(maxv, maxa, maxd, 1, 2, calcdt, dt);
+        t.configureTrajectory(maxv, maxa, maxd, initialVel, finalVel, calcdt, dt);
         
         t.generate();
         //t.generate();
