@@ -3,30 +3,52 @@ public class Waypoint {
 	
 	private double x, y, theta, vel, maxv, maxa, maxd, calcdt, dt;
 	private int trajectoryID;
+	private boolean switchAxis = true;
 
 	public Waypoint(double x, double y, double angle) {
 		// TODO Auto-generated constructor stub
-		this.x = x;
-		this.y = y;
-		theta = angle;
+		if(!switchAxis){
+			this.x = x;
+			this.y = y;
+			theta = angle;
+		}
+		else{
+			this.x = y;
+			this.y = -x;
+			theta = -angle;
+		}
 		vel = 0;
 		this.trajectoryID = 2;
 	}
 	
 	public Waypoint(double x, double y, double angle, double instantaneousVelocity) {
 		// TODO Auto-generated constructor stub
-		this.x = x;
-		this.y = y;
-		theta = angle;
+		if(!switchAxis){
+			this.x = x;
+			this.y = y;
+			theta = angle;
+		}
+		else{
+			this.x = y;
+			this.y = -x;
+			theta = -angle;
+		}
 		vel = instantaneousVelocity;
 		this.trajectoryID = 1;
 	}
 	
 	public Waypoint(double x, double y, double angle, double instantaneousVelocity, 
 			double maxVel, double maxAcc, double maxDec, double calc_dt, double dt){
-		this.x = x;
-		this.y = y;
-		this.theta = angle;
+		if(!switchAxis){
+			this.x = x;
+			this.y = y;
+			theta = angle;
+		}
+		else{
+			this.x = y;
+			this.y = -x;
+			theta = -angle;
+		}
 		vel = instantaneousVelocity;
 		setMaxv(maxVel);
 		setMaxa(maxAcc);
@@ -34,6 +56,10 @@ public class Waypoint {
 		setCalcdt(calc_dt);
 		this.setDt(dt);
 		this.trajectoryID = 0;
+	}
+	
+	public void setAxis(boolean lineUpWithY){
+		switchAxis = lineUpWithY;
 	}
 
 	public double getX(){

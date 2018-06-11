@@ -30,10 +30,8 @@ public class Trajectory {
 			}
 			i++;
 			Spline[] splines = new Spline[getSplineLength(i)];
-			System.out.println(getSplineLength(i));
 			int num = 0;
 			while(waypoints[i].getID() == 2){
-				System.out.println("yay");
 				splines[num] = new Spline(waypoints[i-1], waypoints[i]);
 				i++;
 				num++;
@@ -92,14 +90,22 @@ public class Trajectory {
 		}
 		ArrayList<Spline[]> trajectories = fillSplines();
 		Spline[] s = trajectories.get(0);
-		System.out.println(s.length);
-		t = new TrajectoryGeneration(maxv, maxa, maxd, 0.0, config.get(0).vel, config.get(1).vel, calculation_dt, dt, s);
+		//System.out.println(s.length);
+		t = new TrajectoryGeneration(maxv, maxa, maxd, config.get(0).vel, config.get(1).vel, calculation_dt, dt, s);
 		t.generate();
 		for(int i = 1; i < trajectories.size(); i++){
-			t.configureNewTrajectory(config.get(i).maxv, config.get(i).maxa, config.get(i).maxd, 0, config.get(i).vel, 
+			t.configureNewTrajectory(config.get(i).maxv, config.get(i).maxa, config.get(i).maxd, config.get(i).vel, 
 					config.get(i+1).vel, config.get(i).calcdt, config.get(i).dt, trajectories.get(i));
 			t.generate();
 		}
 		System.out.println(t);
+	}
+	
+	public ArrayList<TrajectoryGeneration.TrajectoryPoint> getLeftWheelTrajectory(){
+		return t.getLeftWheel();
+	}
+	
+	public ArrayList<TrajectoryGeneration.TrajectoryPoint> getRightWheelTrajectory(){
+		return t.getRightWheel();
 	}
 }

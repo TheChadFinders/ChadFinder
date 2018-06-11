@@ -2,12 +2,10 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 public class TrajectoryGeneration {
   
-	private double maxVelocity;
 	private double maxAcceleration;
 	private double maxDeceleration;
 	private double initialVelocity;
 	private double finalVelocity;
-	private double arcLength;
 	private double dt;
 	private double x = 0;
 	private Spline s;
@@ -32,12 +30,10 @@ public class TrajectoryGeneration {
 	DecimalFormat df = new DecimalFormat("#.####");
 	
 	public TrajectoryGeneration(double maxVelocity, double maxAcceleration, double maxDeceleration,
-			double arcLength, double initialVel, double finalVel, double calculation_dt, double dt, Spline[] splines) {
+			double initialVel, double finalVel, double calculation_dt, double dt, Spline[] splines) {
 		// TODO Auto-generated constructor stub
-		this.maxVelocity = maxVelocity;
 		this.maxAcceleration = maxAcceleration;
 		this.maxDeceleration = maxDeceleration;
-		this.arcLength = arcLength;
 		this.initialVelocity = initialVel;
 		this.finalVelocity = finalVel;
 		this.currentLowerVel = initialVel;
@@ -65,13 +61,10 @@ public class TrajectoryGeneration {
 	}
 	
 	public void configureNewTrajectory(double maxVelocity, double maxAcceleration, double maxDeceleration,
-			double arcLength, double initialVel, double finalVel, double calculation_dt, double dt, Spline[] splines) {
+			double initialVel, double finalVel, double calculation_dt, double dt, Spline[] splines) {
 		// TODO Auto-generated constructor stub
-		this.maxVelocity = maxVelocity;
-		//System.out.println(maxVelocity);
 		this.maxAcceleration = maxAcceleration;
 		this.maxDeceleration = maxDeceleration;
-		this.arcLength = arcLength;
 		this.initialVelocity = initialVel;
 		this.finalVelocity = finalVel;
 		this.currentLowerVel = initialVel;
@@ -109,8 +102,7 @@ public class TrajectoryGeneration {
 		return state;
 	}
 	
-	private class TrajectoryPoint{
-		@SuppressWarnings("unused")
+	public class TrajectoryPoint{
 		public double pos = 0, vel = 0, time;
 		
 		public TrajectoryPoint(double pos, double vel, double time){

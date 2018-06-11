@@ -2,10 +2,10 @@ public class Main {
     public static void main(String[] args) {
         double x0 = 0.0;
         double y0 = 0.0;
-        double x1 = 2.65;
-        double y1 = 1.53;
+        double x1 = 1.53;
+        double y1 = 2.65;
         double theta0 = 0;
-        double theta1 = 0;
+        double theta1 = Math.PI/3;
         double maxv = 2.5;
         double maxa = 3;
         double maxd = 3;
@@ -17,11 +17,11 @@ public class Main {
         Waypoint[] points = new Waypoint[]{
         	new Waypoint(x0, y0, theta0),
         	new Waypoint(x1, y1, theta1),
-        	new Waypoint(5, 4, 0)
+        	new Waypoint(5, 4, Math.PI/2)
         };
         
-        Waypoint way1 = new Waypoint(x0, y0, theta0);
-        Waypoint way2 = new Waypoint(x1, y1, theta1);
+        //Waypoint way1 = new Waypoint(x0, y0, theta0);
+        //Waypoint way2 = new Waypoint(x1, y1, theta1);
         
         //Spline s = new Spline(way1, way2);
         //Spline g = new Spline(x1, y1, theta1, 5, 4, 0);
