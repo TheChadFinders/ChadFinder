@@ -65,9 +65,10 @@ public class TrajectoryGeneration {
 	}
 	
 	public void configureNewTrajectory(double maxVelocity, double maxAcceleration, double maxDeceleration,
-			double arcLength, double initialVel, double finalVel, Spline[] splines) {
+			double arcLength, double initialVel, double finalVel, double calculation_dt, double dt, Spline[] splines) {
 		// TODO Auto-generated constructor stub
 		this.maxVelocity = maxVelocity;
+		//System.out.println(maxVelocity);
 		this.maxAcceleration = maxAcceleration;
 		this.maxDeceleration = maxDeceleration;
 		this.arcLength = arcLength;
@@ -76,6 +77,8 @@ public class TrajectoryGeneration {
 		this.currentLowerVel = initialVel;
 		this.currentUpperVel = initialVel;
 		this.currentInnerArcLength = 0;
+		this.expected_dt = dt;
+		this.dt = calculation_dt;
 		this.x = 0;
 		setState(MotionState.ACCELERATING);
 		this.totalXDistance = 0;

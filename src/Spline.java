@@ -47,10 +47,43 @@ public class Spline {
         e = yp0_hat;
         
         arcLength = evaluateArcLength();
-        
-
     }
 
+    public Spline(Waypoint waypoint0, Waypoint waypoint1){
+    	double x0 = waypoint0.getX();
+    	double y0 = waypoint0.getY();
+    	double theta0 = waypoint0.getAngle();
+    	double x1 = waypoint1.getX();
+    	double y1 = waypoint1.getY(); 
+    	double theta1 = waypoint1.getAngle();
+        System.out.println("Reticulating splines...");
+        xOffset = x0;
+        yOffset = y0;
+        
+        thetaOffset = Math.atan2(y1-y0, x1-x0);
+        
+        distance = Math.sqrt((x1-x0) * (x1-x0) + (y1-y0) * (y1-y0));
+        
+        if (distance==0){
+            return;
+        }
+
+        double yp0_hat = Math.tan(twoAngleDifference(theta0, thetaOffset));
+        double yp1_hat = Math.tan(twoAngleDifference(theta1, thetaOffset));
+        
+        System.out.println(Math.toDegrees(theta0 - thetaOffset));
+        System.out.println(Math.toDegrees(theta1 - thetaOffset));
+        
+        //Here I go straight for the Quintic
+        a = -(3 * (yp0_hat + yp1_hat)) / (distance * distance * distance * distance);
+        b = (8 * yp0_hat + 7 * yp1_hat) / (distance * distance * distance);
+        c = -(6 * yp0_hat + 4 * yp1_hat) / (distance * distance);
+        d = 0;
+        e = yp0_hat;
+        
+        arcLength = evaluateArcLength();
+    }
+    
     @Override
     public String toString() {
         String s = "A -> " + a + "\n" +
