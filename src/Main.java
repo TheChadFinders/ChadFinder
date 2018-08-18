@@ -1,4 +1,15 @@
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+
 public class Main {
+	
+	static PrintWriter log;
+	static File oldFile, newFile;
+	
+	static String name = "yuh";
+	
     public static void main(String[] args) {
         double x0 = 0.0;
         double y0 = 0.0;
@@ -17,7 +28,7 @@ public class Main {
         Waypoint[] points = new Waypoint[]{
         	new Waypoint(x0, y0, theta0),
         	new Waypoint(x1, y1, theta1),
-        	new Waypoint(5, 4, Math.PI/2)
+        	//new Waypoint(5, 4, Math.PI/2)
         };
         
         //Waypoint way1 = new Waypoint(x0, y0, theta0);
@@ -53,5 +64,32 @@ public class Main {
        // System.out.println(t);
         
         //System.out.println(t);
+        ArrayList<TrajectoryGeneration.TrajectoryPoint> leftWheel = t.getLeftWheelTrajectory();
+        ArrayList<TrajectoryGeneration.TrajectoryPoint> rightWheel = t.getRightWheelTrajectory();
+
+        if (log == null) {
+			try {
+				oldFile = new File("Paths/" + name + ".txt");
+				if(oldFile.exists()) {
+					oldFile.delete();
+				}
+				newFile = new File("Paths/" + name + ".txt");
+				newFile.createNewFile();
+				log = new PrintWriter(newFile);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		for (int i = 0; i < leftWheel.size(); i++) {
+			
+			log.printf("%f, %f, %f, %f, %f\n",
+					leftWheel.get(i).vel, leftWheel.get(i).pos, rightWheel.get(i).vel, rightWheel.get(i).pos, dt);
+		}
+		
+		if(log != null) {
+    		log.close();
+    		log = null;
+    	}
     }
 }
